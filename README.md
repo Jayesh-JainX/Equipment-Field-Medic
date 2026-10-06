@@ -45,3 +45,4 @@ npm run dev
 Open `http://localhost:3000` to access the Equipment Field Medic application.
 
 Built for heavy outdoor utility and open-source contribution!
+.
