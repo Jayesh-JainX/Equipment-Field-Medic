@@ -1,69 +1,127 @@
-import Image from "next/image";
+'use client';
+
+import React, { useState } from 'react';
+import { Navbar } from '../components/Navbar';
+import { AuthModal } from '../components/AuthModal';
+import { CameraMedic } from '../components/CameraMedic';
+import { VoiceRepairAssistant } from '../components/VoiceRepairAssistant';
+import { GearLocker } from '../components/GearLocker';
+import { RepairHistory } from '../components/RepairHistory';
+import { OfflineGuide } from '../components/OfflineGuide';
+import { RepairProtocol } from '../lib/api';
+import { Shield, Sparkles, Radio, Zap, HeartPulse, BatteryCharging } from 'lucide-react';
 
 export default function Home() {
+  const [activeProtocol, setActiveProtocol] = useState<RepairProtocol | null>(null);
+  const [isAuthOpen, setIsAuthOpen] = useState<boolean>(false);
+  const [isGearOpen, setIsGearOpen] = useState<boolean>(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState<boolean>(false);
+  const [stealthMode, setStealthMode] = useState<boolean>(false);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className={`min-h-screen flex flex-col transition-all ${stealthMode ? 'stealth-dim' : ''}`}>
+      
+      {/* Header Navbar */}
+      <Navbar
+        onOpenAuth={() => setIsAuthOpen(true)}
+        onOpenGear={() => setIsGearOpen(true)}
+        onOpenHistory={() => setIsHistoryOpen(true)}
+        stealthMode={stealthMode}
+        onToggleStealth={() => setStealthMode(!stealthMode)}
+      />
+
+      {/* Main Container */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:py-8 space-y-8">
+        
+        {/* Stealth Banner Alert when active */}
+        {stealthMode && (
+          <div className="p-3 bg-amber-500 text-slate-950 rounded-xl font-bold text-xs flex items-center justify-between shadow-lg">
+            <div className="flex items-center gap-2">
+              <BatteryCharging className="w-5 h-5" />
+              <span>STEALTH BATTERY SAVER MODE ACTIVE — Screen brightness dimmed for long backcountry repairs.</span>
+            </div>
+            <button
+              onClick={() => setStealthMode(false)}
+              className="underline hover:text-slate-900"
+            >
+              Disable
+            </button>
+          </div>
+        )}
+
+        {/* Hero Banner when no active protocol */}
+        {!activeProtocol && (
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-slate-900 to-emerald-950/60 border border-slate-800 p-6 sm:p-8 shadow-2xl">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase mb-4">
+                <HeartPulse className="w-4 h-4 text-emerald-400 animate-pulse" />
+                Hands-Free Equipment Field Medic
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-black text-slate-100 uppercase tracking-tight leading-tight mb-3">
+                Keep your hands on your gear, <span className="text-emerald-400">not your screen</span>.
+              </h2>
+              <p className="text-sm text-slate-300 leading-relaxed mb-6">
+                Snap a photo of your broken tent pole, boot sole, or jacket tear. Our open-weight vision AI retrieves an emergency field-fix protocol, and a voice assistant dictates repair steps hands-free.
+              </p>
+
+              <div className="flex items-center gap-4 text-xs font-mono text-slate-400">
+                <span className="flex items-center gap-1.5 text-slate-200">
+                  <Zap className="w-4 h-4 text-emerald-400" /> Model: meta-llama/Llama-4-Scout
+                </span>
+                <span className="flex items-center gap-1.5 text-slate-200">
+                  <Radio className="w-4 h-4 text-cyan-400" /> Voice Commands: "Next step"
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Diagnosis & Voice Assistant Core Section */}
+        {activeProtocol ? (
+          <VoiceRepairAssistant
+            protocol={activeProtocol}
+            onReset={() => setActiveProtocol(null)}
+            stealthMode={stealthMode}
+            onToggleStealth={() => setStealthMode(!stealthMode)}
+          />
+        ) : (
+          <CameraMedic
+            onDiagnosisComplete={(protocol) => setActiveProtocol(protocol)}
+          />
+        )}
+
+        {/* Offline Emergency Field Cheatsheets */}
+        <OfflineGuide
+          onSelectQuickRepair={(protocol) => setActiveProtocol(protocol)}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-slate-900 bg-slate-950 py-6 text-center text-xs text-slate-500">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between flex-wrap gap-4">
+          <p>© 2026 Equipment Field Medic • Hugging Face Llama-4 Scout & MongoDB Powered</p>
+          <p className="font-mono text-[11px] text-slate-600">Built for Hacktoberfest & Extreme Wilderness Survival</p>
+        </div>
+      </footer>
+
+      {/* Modals */}
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+      />
+
+      <GearLocker
+        isOpen={isGearOpen}
+        onClose={() => setIsGearOpen(false)}
+      />
+
+      <RepairHistory
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        onSelectProtocol={(protocol) => setActiveProtocol(protocol)}
+      />
+
     </div>
   );
 }
