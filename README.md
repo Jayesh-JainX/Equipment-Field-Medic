@@ -1,5 +1,9 @@
 # Equipment Field Medic ⛰️🏕️
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Hosted_on_Vercel-000000?style=for-the-badge&logo=vercel)](https://equipment-field-medic.vercel.app)
+
+![Equipment Field Medic Preview](./frontend/public/image.png)
+
 Equipment Field Medic is a hands-free Wilderness Gear Diagnosis and Repair Assistant built for backpackers, hikers, and mountaineers.
 
 When your gear breaks miles away from civilization, you want to keep your hands on your gear, not scrolling on your phone screen. Equipment Field Medic uses standard camera snapshots to accurately diagnose failures (using open-weight Llama Vision models) and walks you through emergency field repair using Text-to-Speech narration and Hands-Free Voice Commands.
